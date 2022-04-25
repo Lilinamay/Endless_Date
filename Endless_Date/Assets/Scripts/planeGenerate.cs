@@ -13,7 +13,7 @@ public class planeGenerate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 myVector = new Vector3(30.0f, 0.0f, 0.0f);
+        Vector3 myVector = new Vector3(20.0f, 0.0f, 0.0f);
         //randP = Random.Range(0, plane.Count);
         for(int i = 0; i < 3; i++)
         {
@@ -88,7 +88,7 @@ public class planeGenerate : MonoBehaviour
                 plane[randint].SetActive(true);
                 platform.LastPlatform = plane[randint].GetComponent<platform>();
                 plane[randint].transform.position = transform.position;
-                plane[randint].transform.localPosition = new Vector3(-60, 0, 0);
+                plane[randint].transform.localPosition = new Vector3(-25, 0, 0);
             }
             
         }
