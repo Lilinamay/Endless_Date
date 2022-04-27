@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class cambehavior : MonoBehaviour
 {
-    [SerializeField] Camera Cam;
+    //[SerializeField] Camera Cam;
     [SerializeField] float speed = 5;
     [SerializeField] float xLimit = 60f;
     [SerializeField] float yboLimit = -30;
