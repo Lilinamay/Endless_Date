@@ -48,7 +48,7 @@ public class planeGenerate : MonoBehaviour
                         plane[randint].transform.localPosition = platform.LastPlatform.transform.localPosition + myVector;
                     }
                     platform.LastPlatform = plane[randint].GetComponent<platform>();
-                    Debug.Log(plane[randint].gameObject.name);
+                    //Debug.Log(plane[randint].gameObject.name);
                 }
 
             }

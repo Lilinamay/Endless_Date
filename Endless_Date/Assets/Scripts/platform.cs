@@ -29,7 +29,7 @@ public class platform : MonoBehaviour
         //int randint = Random.Range(0, 3);
         if (other.CompareTag("end"))
         {
-            Debug.Log("hit");
+            //Debug.Log("hit");
             GetComponentInParent<planeGenerate>().newplatform();
             gameObject.SetActive(false);
         }
