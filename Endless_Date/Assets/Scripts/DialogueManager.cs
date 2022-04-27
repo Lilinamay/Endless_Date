@@ -77,7 +77,7 @@ public class DialogueManager : MonoBehaviour
             PlayerPrefs.DeleteKey("inkSaveState");
             story.ResetState();
         }
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Space) /*|| Input.GetMouseButtonDown(0)/*/)
         {
             //Is there more to the story?
             if (story.canContinue)
