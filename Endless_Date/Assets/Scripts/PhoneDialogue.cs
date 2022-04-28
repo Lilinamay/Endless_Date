@@ -5,10 +5,10 @@ using UnityEngine.UI;
 using Ink.Runtime;
 using TMPro;
 
-public class DialogueManager : MonoBehaviour
+public class PhoneDialogue : MonoBehaviour
 {
     public TextAsset inkFile;
-    public TextAsset inkFileMom;
+    //public TextAsset ink2File;
 
     public GameObject textBox;
     public GameObject customButton;
@@ -19,58 +19,45 @@ public class DialogueManager : MonoBehaviour
     static Story story;
     TMP_Text nametag;
     TMP_Text message;
-    public TMP_Text nametag2;
-    public TMP_Text message2;
-    public Image phoneBack;
+    TMP_Text nametag2;
+    TMP_Text message2;
     List<string> tags;
     static Choice choiceSelected;
 
-    string mainsavedJson;
-    string tempsavedJson;
-    string phonesavedJson;
+    string savedJson;
 
-    public bool main = true;
-    [SerializeField] GameObject phoneEnterButton;
-    [SerializeField] GameObject phoneExitButton;
-
+    public int storyNum;
 
     //Vector2 choiceSpace = Vector2;
 
     // Start is called before the first frame update
     void Start()
     {
-        phoneBack.enabled = false;
-        phoneExitButton.SetActive(false);
         nametag = textBox.transform.GetChild(0).GetComponent<TMP_Text>();
         message = textBox.transform.GetChild(1).GetComponent<TMP_Text>();
         tags = new List<string>();
         choiceSelected = null;
-        if (PlayerPrefs.HasKey("inkSaveStatePhone"))
-        {
-            story = new Story(inkFileMom.text);
-            phonesavedJson = PlayerPrefs.GetString("inkSaveStatePhone");
-            story.state.LoadJson(phonesavedJson);
-            Debug.Log(phonesavedJson);
-            phone();
-        }
-        else if (PlayerPrefs.HasKey("inkSaveStateMain"))
+        if (PlayerPrefs.HasKey("inkSaveState"))
         {
             story = new Story(inkFile.text);
-            mainsavedJson = PlayerPrefs.GetString("inkSaveStateMain");
-            story.state.LoadJson(mainsavedJson);
-            Debug.Log(mainsavedJson);
-            nametag.text = "Phoenix";
-            message.text = story.currentText;
+            savedJson = PlayerPrefs.GetString("inkSaveState");
+            story.state.LoadJson(savedJson);
+            Debug.Log(savedJson);
+            //RefreshView(); // or   refresh();
             if (story.currentChoices.Count != 0)
             {
-                
                 StartCoroutine(ShowChoices());
             }
             if (story.canContinue)
             {
-                
-                //AdvanceDialogue();
+                nametag.text = "Phoenix";
+                AdvanceDialogue();
 
+                //Are there any choices?
+                if (story.currentChoices.Count != 0)
+                {
+                    StartCoroutine(ShowChoices());
+                }
             }
             else
             {
@@ -89,37 +76,13 @@ public class DialogueManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            if (main)
-            {
-                if (PlayerPrefs.HasKey("inkSaveStatePhone"))
-                {
-                    PlayerPrefs.DeleteKey("inkSaveStatePhone");
-                }
-                mainsavedJson = story.state.ToJson();
-                PlayerPrefs.SetString("inkSaveStateMain", mainsavedJson);
-            }
-            else
-            {
-                phonesavedJson = story.state.ToJson();
-                PlayerPrefs.SetString("inkSaveStatePhone", phonesavedJson);
-            }
+            savedJson = story.state.ToJson();
+            PlayerPrefs.SetString("inkSaveState", savedJson);
         }
         if (Input.GetKeyDown(KeyCode.O))
         {
-            PlayerPrefs.DeleteKey("inkSaveStateMain");
-            if (PlayerPrefs.HasKey("inkSaveStateTemp"))
-            {
-                PlayerPrefs.DeleteKey("inkSaveStateTemp");
-            }
-            if (PlayerPrefs.HasKey("inkSaveStatePhone"))
-            {
-                PlayerPrefs.DeleteKey("inkSaveStatePhone");
-            }
+            PlayerPrefs.DeleteKey("inkSaveState");
             story.ResetState();
-            main = true;
-            story = new Story(inkFile.text);
-            AdvanceDialogue();
-
         }
         if (Input.GetKeyDown(KeyCode.Space) /*|| Input.GetMouseButtonDown(0)/*/)
         {
@@ -140,47 +103,22 @@ public class DialogueManager : MonoBehaviour
                 FinishDialogue();
             }
         }
-
-        if (main)
-        {
-            phoneExitButton.SetActive(false);
-            nametag2.text = "";
-            message2.text = "";
-            phoneBack.enabled = false;
-        }
     }
 
     // Finished the Story (Dialogue)
     private void FinishDialogue()
     {
-        if (main)
-        {
-            Debug.Log("End of Dialogue!");
-        }
-        else
-        {
-            
-            Debug.Log("End of Side Dialogue!");
-
-
-        }
+        Debug.Log("End of Dialogue!");
     }
 
     // Advance through the story 
     void AdvanceDialogue()
     {
         string currentSentence = story.Continue();
-
+        //story
         ParseTags();
         StopAllCoroutines();
-        if (main)
-        {
-            StartCoroutine(TypeSentence(currentSentence));
-        }
-        else
-        {
-            message2.text = currentSentence;
-        }
+        StartCoroutine(TypeSentence(currentSentence));
     }
 
     // Type out the sentence letter by letter and make character idle if they were talking
@@ -205,16 +143,16 @@ public class DialogueManager : MonoBehaviour
     {
         Debug.Log("There are choices need to be made here!");
         List<Choice> _choices = story.currentChoices;
-        float bound = 210/ _choices.Count;
-        float space = (optionPanel.GetComponent<RectTransform>().sizeDelta.y+bound)/ _choices.Count;
+        float bound = 210 / _choices.Count;
+        float space = (optionPanel.GetComponent<RectTransform>().sizeDelta.y + bound) / _choices.Count;
         Debug.Log(_choices.Count);
         Debug.Log("hight: " + (optionPanel.GetComponent<RectTransform>().sizeDelta.y + bound));
-        Debug.Log("space: " +space);
+        Debug.Log("space: " + space);
         for (int i = 0; i < _choices.Count; i++)
         {
-            
+
             GameObject temp = Instantiate(customButton, optionPanel.transform);
-            temp.transform.position += Vector3.down * i * -space -Vector3.up * space;
+            temp.transform.position += Vector3.down * i * -space - Vector3.up * space;
             Debug.Log(temp.transform.position);
             //Debug.Log(temp);
             //Debug.Log(i);
@@ -299,64 +237,4 @@ public class DialogueManager : MonoBehaviour
                 break;
         }
     }
-
-    public void phone()
-    {
-        phoneEnterButton.SetActive(false);
-        phoneExitButton.SetActive(true);
-        Debug.Log("triggered phone");
-        main = false;
-        nametag2.text = "Phoenix";
-        if (PlayerPrefs.HasKey("inkSaveStatePhone"))
-        {
-            message2.text = story.currentText;
-        }
-        else
-        {
-            tempsavedJson = story.state.ToJson();
-            PlayerPrefs.SetString("inkSaveStateTemp", tempsavedJson);       //save  story progess in a temperary to go back to
-            story = new Story(inkFileMom.text);
-            tags = new List<string>();
-            choiceSelected = null;
-            AdvanceDialogue();
-        }
-        
-        
-        phoneBack.enabled = true;
-        
-    }
-
-    public void exitPhone()
-    {
-        // go back to main
-        
-        if (PlayerPrefs.HasKey("inkSaveStateTemp"))
-        {
-            main = true;
-            phoneExitButton.SetActive(false);
-            nametag2.text = "";
-            message2.text = "";
-            phoneBack.enabled = false;
-            //PlayerPrefs.DeleteKey("inkSaveStatePhone");
-            story = new Story(inkFile.text);
-            //mainsavedJson = PlayerPrefs.GetString("inkSaveStateTemp");
-            tempsavedJson = PlayerPrefs.GetString("inkSaveStateTemp");
-            story.state.LoadJson(tempsavedJson);
-            Debug.Log(tempsavedJson);
-            nametag.text = "Phoenix";
-            message.text = story.currentText;
-            if (story.currentChoices.Count != 0)
-            {
-                StartCoroutine(ShowChoices());
-            }
-            
-        }
-        else
-        {
-            Debug.Log("you shouldn't be here, error");
-            main = true;
-        }
-    }
-
-
 }
