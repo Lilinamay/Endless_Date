@@ -21,7 +21,7 @@ public class DialogueManager : MonoBehaviour
     TMP_Text message;
     public TMP_Text nametag2;
     public TMP_Text message2;
-    public Image phoneBack;
+    
     List<string> tags;
     static Choice choiceSelected;
 
@@ -32,7 +32,8 @@ public class DialogueManager : MonoBehaviour
     public bool main = true;
     [SerializeField] GameObject phoneEnterButton;
     [SerializeField] GameObject phoneExitButton;
-
+    public Image phoneBack;
+    [SerializeField] GameObject secondCanvas;
 
     //Vector2 choiceSpace = Vector2;
 
@@ -41,6 +42,7 @@ public class DialogueManager : MonoBehaviour
     {
         phoneBack.enabled = false;
         phoneExitButton.SetActive(false);
+        secondCanvas.SetActive(false);
         nametag = textBox.transform.GetChild(0).GetComponent<TMP_Text>();
         message = textBox.transform.GetChild(1).GetComponent<TMP_Text>();
         tags = new List<string>();
@@ -59,7 +61,7 @@ public class DialogueManager : MonoBehaviour
             mainsavedJson = PlayerPrefs.GetString("inkSaveStateMain");
             story.state.LoadJson(mainsavedJson);
             Debug.Log(mainsavedJson);
-            nametag.text = "Phoenix";
+            //nametag.text = "Phoenix";
             message.text = story.currentText;
             if (story.currentChoices.Count != 0)
             {
@@ -126,7 +128,7 @@ public class DialogueManager : MonoBehaviour
             //Is there more to the story?
             if (story.canContinue)
             {
-                nametag.text = "Phoenix";
+                //nametag.text = "Phoenix";
                 AdvanceDialogue();
 
                 //Are there any choices?
@@ -147,6 +149,7 @@ public class DialogueManager : MonoBehaviour
             nametag2.text = "";
             message2.text = "";
             phoneBack.enabled = false;
+            secondCanvas.SetActive(false);
         }
     }
 
@@ -270,6 +273,17 @@ public class DialogueManager : MonoBehaviour
                 case "color":
                     SetTextColor(param);
                     break;
+                case "name":
+                    if (main)
+                    {
+                        nametag.text = param;
+                    }
+                    else
+                    {
+                        nametag2.text = param;
+                    }
+                    break;
+
             }
         }
     }
@@ -302,11 +316,12 @@ public class DialogueManager : MonoBehaviour
 
     public void phone()
     {
+        secondCanvas.SetActive(true);
         phoneEnterButton.SetActive(false);
         phoneExitButton.SetActive(true);
         Debug.Log("triggered phone");
         main = false;
-        nametag2.text = "Phoenix";
+        //nametag2.text = "Phoenix";
         if (PlayerPrefs.HasKey("inkSaveStatePhone"))
         {
             message2.text = story.currentText;

@@ -5666,7 +5666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139408faf8cfc48bfa88d55f9425bcdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inkFile: {fileID: 4900000, guid: df470ef8ba04945279aa0cde6e432586, type: 3}
+  inkFile: {fileID: 4900000, guid: f87d9ce407a1745f59de3438ec1f037f, type: 3}
   inkFileMom: {fileID: 4900000, guid: 5bc686743a23d4b4d9e9a7a43430c853, type: 3}
   textBox: {fileID: 1337849280}
   customButton: {fileID: 8982065842790706412, guid: 69027182fb227417ca6961ec5dcf3744, type: 3}
@@ -5674,10 +5674,11 @@ MonoBehaviour:
   isTalking: 0
   nametag2: {fileID: 762899813}
   message2: {fileID: 1171875109}
-  phoneBack: {fileID: 1093803660}
   main: 1
   phoneEnterButton: {fileID: 949285347}
   phoneExitButton: {fileID: 969139564}
+  phoneBack: {fileID: 1093803660}
+  secondCanvas: {fileID: 235902536}
 --- !u!4 &706765751
 Transform:
   m_ObjectHideFlags: 0
