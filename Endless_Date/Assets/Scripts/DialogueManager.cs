@@ -16,6 +16,8 @@ public class DialogueManager : MonoBehaviour
     public bool isTalking = false;
 
 
+
+
     static Story story;
     TMP_Text nametag;
     TMP_Text message;
@@ -34,6 +36,14 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] GameObject phoneExitButton;
     public Image phoneBack;
     [SerializeField] GameObject secondCanvas;
+    [SerializeField] GameObject phoneBox;
+    [SerializeField] GameObject phoneBoxSam;
+    string myname;
+
+    [SerializeField] float yPhoneboxOffset = 0;
+    [SerializeField] float maxyPhonebox = -150;
+    [SerializeField] List<GameObject> phoneboxes;
+
 
     //Vector2 choiceSpace = Vector2;
 
@@ -134,7 +144,14 @@ public class DialogueManager : MonoBehaviour
                 //Are there any choices?
                 if (story.currentChoices.Count != 0)
                 {
-                    StartCoroutine(ShowChoices());
+                    if (main)
+                    {
+                        StartCoroutine(ShowChoices());
+                    }
+                    else
+                    {
+                        StartCoroutine(ShowChoicesPhone());
+                    }
                 }
             }
             else
@@ -182,9 +199,59 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            message2.text = currentSentence;
+            //message2.text = currentSentence;
+            float chatspace = 20;
+            float bound = 50;
+            float spaceX = (phoneBack.GetComponent<RectTransform>().sizeDelta.x - bound * 2) / 12;
+            float spaceY = (phoneBack.GetComponent<RectTransform>().sizeDelta.y - bound * 1.5f) / 2;
+            if (phoneboxes.Count > 0)
+            {
+                yPhoneboxOffset -= phoneboxes[phoneboxes.Count - 1].GetComponentInChildren<test>().yvalue + chatspace; // + bound;
+                Debug.Log("value: " + phoneboxes[phoneboxes.Count - 1].GetComponentInChildren<test>().yvalue);
+            }
+            while (yPhoneboxOffset <= maxyPhonebox && phoneboxes.Count > 0)
+            {
+                print("check");
+                GameObject temp = phoneboxes[0];
+                phoneboxes.Remove(phoneboxes[0]);
+                Destroy(temp);
+                for (int i = 0; i < phoneboxes.Count; i++)
+                {
+                    if(i == 0)
+                    {
+                        yPhoneboxOffset = 0;
+                    }
+                    else
+                    {
+                        yPhoneboxOffset -= phoneboxes[i - 1].GetComponentInChildren<test>().yvalue + chatspace;
+                    }
+                    phoneboxes[i].transform.position = phoneBack.transform.position;
+                    phoneboxes[i].transform.localPosition = new Vector3(-spaceX, spaceY + yPhoneboxOffset, 0);
+                    Debug.Log("index: " + i+ " offset: " + yPhoneboxOffset + " previous y: " + phoneboxes[phoneboxes.Count - 1].GetComponentInChildren<test>().yvalue);
+                }
+                yPhoneboxOffset -= phoneboxes[phoneboxes.Count - 1].GetComponentInChildren<test>().yvalue + chatspace;
+
+            }
+            GameObject phonebox = new GameObject();
+            if (myname == "Sam")
+            {
+                phonebox = Instantiate(phoneBoxSam, phoneBack.transform);
+            }
+            else
+            {
+                phonebox = Instantiate(phoneBox, phoneBack.transform);
+            }
+            phoneboxes.Add(phonebox);
+            phonebox.GetComponent<TMP_Text>().text = myname;
+            phonebox.transform.GetChild(0).transform.GetChild(0).GetComponent<TMP_Text>().text = currentSentence;
+
+            phonebox.transform.localPosition = new Vector3(-spaceX, spaceY + yPhoneboxOffset, 0);
+
+            //yPhoneboxOffset -= phonebox.GetComponentInChildren<test>().yvalue; // + bound;
+            //Debug.Log("value: " + phonebox.GetComponentInChildren<test>().yvalue);
         }
     }
+
 
     // Type out the sentence letter by letter and make character idle if they were talking
     IEnumerator TypeSentence(string sentence)
@@ -210,9 +277,9 @@ public class DialogueManager : MonoBehaviour
         List<Choice> _choices = story.currentChoices;
         float bound = 210/ _choices.Count;
         float space = (optionPanel.GetComponent<RectTransform>().sizeDelta.y+bound)/ _choices.Count;
-        Debug.Log(_choices.Count);
-        Debug.Log("hight: " + (optionPanel.GetComponent<RectTransform>().sizeDelta.y + bound));
-        Debug.Log("space: " +space);
+        //Debug.Log(_choices.Count);
+        //Debug.Log("hight: " + (optionPanel.GetComponent<RectTransform>().sizeDelta.y + bound));
+        //Debug.Log("space: " +space);
         for (int i = 0; i < _choices.Count; i++)
         {
             
@@ -234,6 +301,44 @@ public class DialogueManager : MonoBehaviour
         AdvanceFromDecision();
     }
 
+    IEnumerator ShowChoicesPhone()
+    {
+        Debug.Log("There are Phone choices need to be made here!");
+        List<Choice> _choices = story.currentChoices;
+        float bound = 10/ _choices.Count;
+        float space = (phoneBack.GetComponent<RectTransform>().sizeDelta.y + bound) / _choices.Count/4;
+        //Debug.Log(_choices.Count);
+        //Debug.Log("hight: " + (optionPanel.GetComponent<RectTransform>().sizeDelta.y + bound));
+        //Debug.Log("space: " +space);
+        for (int i = 0; i < _choices.Count; i++)
+        {
+
+            GameObject temp = Instantiate(customButton, phoneBack.transform);
+            temp.transform.position += Vector3.down * i * -space - Vector3.up * space- Vector3.up *100;
+            Debug.Log(temp.transform.position);
+            //Debug.Log(temp);
+            //Debug.Log(i);
+            temp.transform.GetChild(0).GetComponent<TMP_Text>().text = _choices[i].text;
+            temp.AddComponent<Selectable>();
+            temp.GetComponent<Selectable>().element = _choices[i];
+            temp.GetComponent<Button>().onClick.AddListener(() => { temp.GetComponent<Selectable>().Decide(); });
+        }
+
+        phoneBack.enabled = true;
+
+        yield return new WaitUntil(() => { return choiceSelected != null; });
+
+        //phoneBack.enabled = false;
+        for (int i = 0; i < phoneBack.transform.childCount; i++)
+        {
+            if (phoneBack.transform.GetChild(i).gameObject.CompareTag("choice"))
+            {
+                Destroy(phoneBack.transform.GetChild(i).gameObject);
+            }
+        }
+        choiceSelected = null; // Forgot to reset the choiceSelected. Otherwise, it would select an option without player intervention.
+        AdvanceDialogue();
+    }
     // Tells the story which branch to go to
     public static void SetDecision(object element)
     {
@@ -273,14 +378,14 @@ public class DialogueManager : MonoBehaviour
                 case "color":
                     SetTextColor(param);
                     break;
-                case "name":
+                case "name":            //set name
                     if (main)
                     {
                         nametag.text = param;
                     }
                     else
                     {
-                        nametag2.text = param;
+                        myname = param;
                     }
                     break;
 
@@ -334,6 +439,10 @@ public class DialogueManager : MonoBehaviour
             tags = new List<string>();
             choiceSelected = null;
             AdvanceDialogue();
+            if (story.currentChoices.Count != 0)
+            {
+                StartCoroutine(ShowChoicesPhone());
+            }
         }
         
         
@@ -358,8 +467,9 @@ public class DialogueManager : MonoBehaviour
             tempsavedJson = PlayerPrefs.GetString("inkSaveStateTemp");
             story.state.LoadJson(tempsavedJson);
             Debug.Log(tempsavedJson);
-            nametag.text = "Phoenix";
+            //nametag.text = "Phoenix";
             message.text = story.currentText;
+
             if (story.currentChoices.Count != 0)
             {
                 StartCoroutine(ShowChoices());
