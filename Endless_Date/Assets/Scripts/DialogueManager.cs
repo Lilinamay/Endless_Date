@@ -8,8 +8,8 @@ using TMPro;
 public class DialogueManager : MonoBehaviour
 {
     public TextAsset inkFile;
-    public TextAsset inkFileMom;
     [SerializeField] List<TextAsset> phoneFiles;
+    public TextAsset flowerFile;
     public int phoneindex = -1;
 
 
@@ -52,6 +52,10 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] int timerMax = -150;
     bool firstPhoneTempLoad = false; //if had an unfinished phone story from last time and only phone again for the first time, show current phone story
     public List<GameObject> phoneChoices;
+
+    [SerializeField] mouseClick mouseClick;
+
+
     void Start()
     {
         phoneBack.enabled = false;
@@ -237,14 +241,17 @@ public class DialogueManager : MonoBehaviour
             randomPhoneTime -= Time.deltaTime;
         }
 
-        //if (!hasPhoneMessages)
-        //{
-        //    phoneEnterButton.SetActive(false);
-        //}
-        //else
-        //{
-        //    phoneEnterButton.SetActive(true);
-        //}
+        if(mouseClick.myinkFlowerFile != null)              //if onclick a flower and in main story
+        {
+            if (main)
+            { 
+                flowerFile = mouseClick.myinkFlowerFile;
+            }
+        }
+
+    
+
+
     }
 
     void clearPhoneBox()

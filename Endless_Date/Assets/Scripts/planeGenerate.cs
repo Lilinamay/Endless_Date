@@ -6,16 +6,18 @@ public class planeGenerate : MonoBehaviour
 {
     public List<GameObject> plane;
     int randP;
-    [SerializeField] Transform startPos;
     float Timer = 0;
     [SerializeField] float maxTime = 3;
     [SerializeField] int planeNum;
-    
+    int startMutipler;
+    Vector3 myVector = new Vector3(20.0f, 0.0f, 0.0f);
+
+
 
     void Start()
     {
-        Vector3 myVector = new Vector3(20.0f, 0.0f, 0.0f);
-        int startMutipler = planeNum - 2;
+        
+        startMutipler = planeNum - 2;
         for(int i = 0; i < planeNum; i++)
         {
             bool valid = false;
@@ -47,11 +49,11 @@ public class planeGenerate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Timer += Time.deltaTime;
-        if (Timer >= maxTime)
-        {
+        //Timer += Time.deltaTime;
+        //if (Timer >= maxTime)
+        //{
 
-        }
+        //}
     }
 
     public void newplatform()
@@ -67,7 +69,7 @@ public class planeGenerate : MonoBehaviour
                 plane[randint].SetActive(true);
                 platform.LastPlatform = plane[randint].GetComponent<platform>();
                 plane[randint].transform.position = transform.position;
-                plane[randint].transform.localPosition = new Vector3(-25, 0, 0);
+                plane[randint].transform.localPosition = -myVector * startMutipler;//new Vector3(-160, 0, 0); 20 *
             }
             
         }

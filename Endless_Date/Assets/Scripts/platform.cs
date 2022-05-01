@@ -25,8 +25,6 @@ public class platform : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //platform last = platform.LastPlatform;
-        //int randint = Random.Range(0, 3);
         if (other.CompareTag("end"))
         {
             //Debug.Log("hit");
