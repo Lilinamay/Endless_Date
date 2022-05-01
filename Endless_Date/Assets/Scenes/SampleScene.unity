@@ -1564,7 +1564,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &235902537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5784,7 +5784,7 @@ MonoBehaviour:
   isTalking: 0
   nametag2: {fileID: 762899813}
   message2: {fileID: 1171875109}
-  main: 1
+  currentState: 0
   phoneEnterButton: {fileID: 949285347}
   phoneExitButton: {fileID: 969139564}
   phoneBack: {fileID: 1093803660}
@@ -5914,8 +5914,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.957508, y: -19}
-  m_SizeDelta: {x: 440.653, y: 68.1094}
+  m_AnchoredPosition: {x: -0.4, y: -15}
+  m_SizeDelta: {x: 500, y: 68.1094}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720405367
 MonoBehaviour:
@@ -6332,7 +6332,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10.267487, y: 73}
+  m_AnchoredPosition: {x: 10.267487, y: -63}
   m_SizeDelta: {x: -235.869, y: -203.3701}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &743090520
