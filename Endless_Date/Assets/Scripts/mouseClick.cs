@@ -9,6 +9,7 @@ public class mouseClick : MonoBehaviour
     [SerializeField] LayerMask mask;
     [SerializeField] float distance;            //distance limit on how far you can detect
     public TextAsset myinkFlowerFile;
+    [SerializeField] GameObject menu;
     void Update()
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -18,6 +19,18 @@ public class mouseClick : MonoBehaviour
             {
                 print(hit.collider.name);
                 myinkFlowerFile = hit.collider.GetComponent<flowerProperty>().inkFlowerFile;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!menu.active)
+            {
+                menu.SetActive(true);
+            }
+            else
+            {
+                menu.SetActive(false);
             }
         }
     }
