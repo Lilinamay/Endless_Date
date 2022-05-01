@@ -16,11 +16,5 @@ public class planeProperty : MonoBehaviour
         transform.position += new Vector3(1, 0, 0)*Time.deltaTime* speed;
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.CompareTag("end"))
-        {
-            gameObject.SetActive(false);
-        }
-    }
+
 }

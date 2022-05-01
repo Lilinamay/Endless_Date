@@ -144,9 +144,10 @@ public class DialogueManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            if (currentState == 0)
+            PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);
+            if (currentState == 0 )
             {
-                PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);
+                //PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);
                 if (PlayerPrefs.HasKey("inkSaveStatePhone"))
                 {
                     PlayerPrefs.DeleteKey("inkSaveStatePhone");
@@ -154,14 +155,23 @@ public class DialogueManager : MonoBehaviour
                 mainsavedJson = story.state.ToJson();
                 PlayerPrefs.SetString("inkSaveStateMain", mainsavedJson);
             }
-            else
+            else if (currentState == 1)
             {
-                phonesavedJson = story.state.ToJson();
-                
+                phonesavedJson = story.state.ToJson(); 
                 PlayerPrefs.SetString("inkSaveStatePhone", phonesavedJson);
-                
             }
-            
+            else if (currentState == 2)
+            {
+                if (PlayerPrefs.HasKey("inkSaveStatePhone"))
+                {
+                    PlayerPrefs.DeleteKey("inkSaveStatePhone");
+                }
+                mainsavedJson = PlayerPrefs.GetString("inkSaveStateTempFlower");        //only save main story if saved in flower state
+                PlayerPrefs.SetString("inkSaveStateMain", mainsavedJson);
+
+            }
+
+
         }
         if (Input.GetKeyDown(KeyCode.O))                    //restart game
         {
@@ -171,6 +181,10 @@ public class DialogueManager : MonoBehaviour
             hasPhoneMessages = false;
             generatePhonetime();
             PlayerPrefs.DeleteKey("inkSaveStateMain");
+            if (PlayerPrefs.HasKey("inkSaveStateMain"))
+            {
+                PlayerPrefs.DeleteKey("inkSaveStateMain");
+            }
             if (PlayerPrefs.HasKey("inkSaveStateTemp"))
             {
                 PlayerPrefs.DeleteKey("inkSaveStateTemp");
@@ -188,6 +202,7 @@ public class DialogueManager : MonoBehaviour
                 PlayerPrefs.DeleteKey("inkSaveStatePhoneindex");
             }
             clearPhoneBox();
+            story = new Story(inkFile.text);
             story.ResetState();
             currentState = 0;
             story = new Story(inkFile.text);
@@ -257,7 +272,7 @@ public class DialogueManager : MonoBehaviour
             {
                 Debug.Log("trigger flower state");
                 tempsavedJson = story.state.ToJson();           //temp save main story
-                PlayerPrefs.SetString("inkSaveStateTemp", tempsavedJson);
+                PlayerPrefs.SetString("inkSaveStateTempFlower", tempsavedJson);
                 flowerFile = mouseClick.myinkFlowerFile;
                 story = new Story(flowerFile.text);
                 tags = new List<string>();
@@ -313,14 +328,13 @@ public class DialogueManager : MonoBehaviour
         {
             Debug.Log("End of flower Dialogue!");
             mouseClick.myinkFlowerFile = null;
-            if (PlayerPrefs.HasKey("inkSaveStateTemp"))         // go back to main from where main story was
+            if (PlayerPrefs.HasKey("inkSaveStateTempFlower"))         // go back to main from where main story was
             {
                 currentState = 0;
                 phoneBack.enabled = false;
                 //PlayerPrefs.DeleteKey("inkSaveStatePhone");
                 story = new Story(inkFile.text);
-                //mainsavedJson = PlayerPrefs.GetString("inkSaveStateTemp");
-                tempsavedJson = PlayerPrefs.GetString("inkSaveStateTemp");
+                tempsavedJson = PlayerPrefs.GetString("inkSaveStateTempFlower");
                 story.state.LoadJson(tempsavedJson);
                 Debug.Log(tempsavedJson);
                 //nametag.text = "Phoenix";

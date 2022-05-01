@@ -17,9 +17,10 @@ public class FlowerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        randomFlowerTime = Random.Range(timerMin, timerMax);
+        generateFlowerTime();
         leftPos = gameObject.transform.position - offset * Vector3.forward;
         rightPos = gameObject.transform.position + offset * Vector3.forward;
+        Debug.Log(flowerList.Count);
     }
 
     // Update is called once per frame
@@ -58,8 +59,12 @@ public class FlowerManager : MonoBehaviour
             }
         }
 
+    }
 
-
+    public void generateFlowerTime()
+    {
+        FlowerInScene = false;
+        randomFlowerTime = Random.Range(timerMin, timerMax);
 
     }
 }
