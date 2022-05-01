@@ -5682,6 +5682,7 @@ MonoBehaviour:
   phoneEnterButton: {fileID: 949285347}
   phoneExitButton: {fileID: 969139564}
   phoneBack: {fileID: 1093803660}
+  phoneChoice: {fileID: 6875429613595922549, guid: d3c6f295664f942c5afa6fb2ebfac57b, type: 3}
   secondCanvas: {fileID: 235902536}
   phoneBox: {fileID: 6341930890317319019, guid: 00b121c2c32be45cea9d0da948eb48e0, type: 3}
   phoneBoxSam: {fileID: 4461910944135376775, guid: 0b77f674634ac411792315a9e87dc747, type: 3}
@@ -5689,9 +5690,11 @@ MonoBehaviour:
   maxyPhonebox: -150
   phoneboxes: []
   hasPhoneMessages: 0
+  finishedPhone: 0
   randomPhoneTime: 0
-  timerMin: 4
-  timerMax: 9
+  timerMin: 3
+  timerMax: 8
+  phoneChoices: []
 --- !u!4 &706765751
 Transform:
   m_ObjectHideFlags: 0
@@ -14789,7 +14792,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2052852849}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -51.7, y: 0, z: 0}
+  m_LocalPosition: {x: -130, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
