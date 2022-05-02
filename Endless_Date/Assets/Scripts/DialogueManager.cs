@@ -53,10 +53,14 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] int timerMax = -150;
     bool firstPhoneTempLoad = false; //if had an unfinished phone story from last time and only phone again for the first time, show current phone story
     public List<GameObject> phoneChoices;
-
+    public List<GameObject> mainChoices;
     [SerializeField] mouseClick mouseClick;
 
     [SerializeField] GameObject menu;
+
+    Color SamColor = new Color(1.0f, 0.9333333f, 0.6941f, 1.0f);
+    Color MayColor = new Color(1.0f, 0.7882353f, 0.9490196f);
+    [SerializeField] Color32 testColor;
 
 
     void Start()
@@ -287,6 +291,14 @@ public class DialogueManager : MonoBehaviour
             if (currentState == 0)
             {
                 Debug.Log("trigger flower state");
+                foreach (GameObject m in mainChoices)
+                {
+                    if (m != null)
+                    {
+                        Destroy(m);
+                    }
+                }
+                mainChoices.Clear();
                 tempsavedJson = story.state.ToJson();           //temp save main story
                 PlayerPrefs.SetString("inkSaveStateTempFlower", tempsavedJson);
                 flowerFile = mouseClick.myinkFlowerFile;
@@ -295,6 +307,7 @@ public class DialogueManager : MonoBehaviour
                 choiceSelected = null;
                 AdvanceDialogue(story.Continue());
                 currentState = 2;
+                optionPanel.SetActive(false);
             }
         }
 
@@ -392,6 +405,14 @@ public class DialogueManager : MonoBehaviour
             }
         }
         phoneChoices.Clear();
+        foreach (GameObject m in mainChoices)
+        {
+            if (m != null)
+            {
+                Destroy(m);
+            }
+        }
+        mainChoices.Clear();
     }
 
     void generatePhonetime()
@@ -428,7 +449,10 @@ public class DialogueManager : MonoBehaviour
                 story.state.LoadJson(tempsavedJson);
                 Debug.Log(tempsavedJson);
                 //nametag.text = "Phoenix";
-                AdvanceDialogue(story.Continue());
+                if (story.canContinue)
+                {
+                    AdvanceDialogue(story.Continue());
+                }
                 if (story.currentChoices.Count != 0)
                 {
                     StartCoroutine(ShowChoices());
@@ -538,6 +562,7 @@ public class DialogueManager : MonoBehaviour
         {
             
             GameObject temp = Instantiate(customButton, optionPanel.transform);
+            mainChoices.Add(temp);
             temp.GetComponent<deleteChoiceSelf>().dialogueManager = gameObject;
             temp.transform.position += Vector3.down * i * -space -Vector3.up * space;
             Debug.Log(temp.transform.position);
@@ -552,7 +577,7 @@ public class DialogueManager : MonoBehaviour
         optionPanel.SetActive(true);
 
         yield return new WaitUntil(() => { return choiceSelected != null; });
-
+        mainChoices.Clear();
         AdvanceFromDecision();
     }
 
@@ -625,19 +650,27 @@ public class DialogueManager : MonoBehaviour
                 case "emotion":
                     //SetAnimation(param);
                     Debug.Log(param);
-                    break;
-                case "color":
-                    SetTextColor(param);
-                    break;
+                    break; 
                 case "name":            //set name
                     if (currentState == 0 || currentState == 2)
                     {
                         nametag.text = param;
+                        if(param == "Sam")
+                        {
+                            message.color = SamColor;
+                        }
+                        if (param == "May")
+                        {
+                            message.color = MayColor;
+                        }
                     }
                     else
                     {
                         myname = param;
                     }
+                    break;
+                case "color":
+                    SetTextColor(param);
                     break;
                 case "story":
                     if (param == "end")
