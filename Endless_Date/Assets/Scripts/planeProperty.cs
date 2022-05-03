@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//platform movement
 public class planeProperty : MonoBehaviour
 {
     float speed = 5f;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+//option menu toggle to turn on invert on camera
 public class Menu : MonoBehaviour
 {
     [SerializeField] Toggle invertCamX;
@@ -16,7 +16,7 @@ public class Menu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (invertCamX.isOn)
+        if (invertCamX.isOn)                //invert camera if toggled
         {
             cambehavior.invertX = -1;
         }

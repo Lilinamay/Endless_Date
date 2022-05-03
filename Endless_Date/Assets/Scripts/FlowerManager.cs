@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//manage flower spawn
 public class FlowerManager : MonoBehaviour
 {
     [SerializeField] List<GameObject> flowerList;
@@ -9,7 +9,7 @@ public class FlowerManager : MonoBehaviour
     public bool FlowerSpawn = false;
     [SerializeField] int timerMin = 0;
     [SerializeField] int timerMax = 0;
-    Vector3 leftPos;
+    Vector3 leftPos;        //when spawn either spawn from left or right
     Vector3 rightPos;
     [SerializeField] float offset = 2;
     public float randomFlowerTime;
@@ -26,7 +26,7 @@ public class FlowerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!FlowerInScene)
+        if (!FlowerInScene)         //random generate flower timer countdown
         {
             FlowerSpawn = false;
             if (randomFlowerTime > 0)
@@ -39,7 +39,7 @@ public class FlowerManager : MonoBehaviour
             }
         }
 
-        if (FlowerInScene && !FlowerSpawn)
+        if (FlowerInScene && !FlowerSpawn)//random generate flower from flower list
         {
             int randomIndex = Random.Range(0, flowerList.Count);
             if(flowerList[randomIndex].active == false)

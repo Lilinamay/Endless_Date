@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+//start screen button function
 public class StartScreen : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -28,13 +28,13 @@ public class StartScreen : MonoBehaviour
         static public bool load;    // this is reachable from everywhere
     }
 
-    public void startGame()
+    public void startGame()         //start game from new, pass static bool load to game scene
     {
         StartGameWith.load = false;
         SceneManager.LoadScene("GameScene");
     }
 
-    public void loadGame()
+    public void loadGame()         //start game from save , pass static bool load to game scene
     {
         StartGameWith.load = true;
         SceneManager.LoadScene("GameScene");

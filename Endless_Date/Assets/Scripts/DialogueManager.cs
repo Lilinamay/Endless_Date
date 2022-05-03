@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ink.Runtime;
 using TMPro;
-
+//manage dialogue what text to show onto UI as well as handling save and load, use Inky for dialogue editing. 
 public class DialogueManager : MonoBehaviour
 {
     public TextAsset inkFile;
@@ -58,14 +58,18 @@ public class DialogueManager : MonoBehaviour
 
     [SerializeField] GameObject menu;
 
+    [SerializeField] Sprite DannyImage;
+    [SerializeField] Sprite MomImage;
+    [SerializeField] Sprite SamImage;
+
     Color SamColor = new Color(1.0f, 0.9333333f, 0.6941f, 1.0f);
     Color MayColor = new Color(1.0f, 0.7882353f, 0.9490196f);
-    [SerializeField] Color32 testColor;
-
+    [SerializeField] TMP_Text endText;
 
     void Start()
     {
-        phoneBack.enabled = false;
+        endText.enabled = false;
+        phoneBack.enabled = false;                  //show main UI
         phoneEnterButton.SetActive(false);
         phoneExitButton.SetActive(false);
         secondCanvas.SetActive(false);
@@ -73,7 +77,7 @@ public class DialogueManager : MonoBehaviour
         message = textBox.transform.GetChild(1).GetComponent<TMP_Text>();
         tags = new List<string>();
         choiceSelected = null;
-        if (StartScreen.StartGameWith.load)
+        if (StartScreen.StartGameWith.load)             //If choose load game, load from last save
         {
             if (PlayerPrefs.HasKey("inkSaveStatePhoneindex"))
             {
@@ -161,83 +165,16 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);
-            if (currentState == 0 )
-            {
-                //PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);
-                if (PlayerPrefs.HasKey("inkSaveStatePhone"))
-                {
-                    PlayerPrefs.DeleteKey("inkSaveStatePhone");
-                }
-                mainsavedJson = story.state.ToJson();
-                PlayerPrefs.SetString("inkSaveStateMain", mainsavedJson);
-            }
-            else if (currentState == 1)
-            {
-                phonesavedJson = story.state.ToJson(); 
-                PlayerPrefs.SetString("inkSaveStatePhone", phonesavedJson);
-            }
-            else if (currentState == 2)
-            {
-                if (PlayerPrefs.HasKey("inkSaveStatePhone"))
-                {
-                    PlayerPrefs.DeleteKey("inkSaveStatePhone");
-                }
-                mainsavedJson = PlayerPrefs.GetString("inkSaveStateTempFlower");        //only save main story if saved in flower state
-                PlayerPrefs.SetString("inkSaveStateMain", mainsavedJson);
-
-            }
-
-
-        }
-        if (Input.GetKeyDown(KeyCode.O))                    //restart game
-        {
-            optionPanel.SetActive(false);
-            phoneEnterButton.SetActive(false);
-            phoneindex = -1;
-            hasPhoneMessages = false;
-            generatePhonetime();
-            PlayerPrefs.DeleteKey("inkSaveStateMain");
-            if (PlayerPrefs.HasKey("inkSaveStateMain"))
-            {
-                PlayerPrefs.DeleteKey("inkSaveStateMain");
-            }
-            if (PlayerPrefs.HasKey("inkSaveStateTemp"))
-            {
-                PlayerPrefs.DeleteKey("inkSaveStateTemp");
-            }
-            if (PlayerPrefs.HasKey("inkSaveStatePhone"))
-            {
-                PlayerPrefs.DeleteKey("inkSaveStatePhone");
-            }
-            if (PlayerPrefs.HasKey("inkSaveStateTempPhone"))
-            {
-                PlayerPrefs.DeleteKey("inkSaveStateTempPhone");
-            }
-            if (PlayerPrefs.HasKey("inkSaveStatePhoneindex"))
-            {
-                PlayerPrefs.DeleteKey("inkSaveStatePhoneindex");
-            }
-            clearPhoneBox();
-            story = new Story(inkFile.text);
-            story.ResetState();
-            currentState = 0;
-            story = new Story(inkFile.text);
-            AdvanceDialogue(story.Continue());
-
-        }
-        if (Input.GetKeyDown(KeyCode.Space) /*|| Input.GetMouseButtonDown(0)/*/)
+ 
+        if (Input.GetKeyDown(KeyCode.Space) /*|| Input.GetMouseButtonDown(0)/*/)        //press space to continue story
         {
             //Is there more to the story?
             if (story.canContinue)
             {
-                //nametag.text = "Phoenix";
                 AdvanceDialogue(story.Continue());
 
                 //Are there any choices?
-                if (story.currentChoices.Count != 0)
+                if (story.currentChoices.Count != 0)        //if there are choices, show choices
                 {
                     if (currentState ==0)
                     {
@@ -251,15 +188,13 @@ public class DialogueManager : MonoBehaviour
             }
             else
             {
-                FinishDialogue();
+                FinishDialogue();       //no story to continue, finish story
             }
         }
 
-        if (currentState == 0)
+        if (currentState == 0)          //if in main, phone UI not active
         {
             phoneExitButton.SetActive(false);
-            //nametag2.text = "";
-            //message2.text = "";
             phoneBack.enabled = false;
             secondCanvas.SetActive(false);
         }
@@ -272,6 +207,7 @@ public class DialogueManager : MonoBehaviour
                 print("Phone index: " +phoneindex);
                 phoneindex++;
                 print("Phone index: " + phoneindex);
+                Audiomanager.Instance.PlaySound(Audiomanager.Instance.phone, Audiomanager.Instance.phoneVolume);
                 phoneEnterButton.SetActive(true);
                 yPhoneboxOffset = 0;
                 hasPhoneMessages = true;
@@ -299,7 +235,7 @@ public class DialogueManager : MonoBehaviour
                     }
                 }
                 mainChoices.Clear();
-                tempsavedJson = story.state.ToJson();           //temp save main story
+                tempsavedJson = story.state.ToJson();           //temp save main story to go back to main story once story is finished
                 PlayerPrefs.SetString("inkSaveStateTempFlower", tempsavedJson);
                 flowerFile = mouseClick.myinkFlowerFile;
                 story = new Story(flowerFile.text);
@@ -315,8 +251,9 @@ public class DialogueManager : MonoBehaviour
 
 
     }
-    public void newGame()
+    public void newGame()           //if hit button to start new game, get rid of the saves and restart game elements
     {
+        endText.enabled = false;
         optionPanel.SetActive(false);
         phoneEnterButton.SetActive(false);
         phoneindex = -1;
@@ -352,13 +289,12 @@ public class DialogueManager : MonoBehaviour
         AdvanceDialogue(story.Continue());
     }
 
-    public void saveGame()
+    public void saveGame()                  //save game with current story
     {
         menu.SetActive(false);
-        PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);
+        PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);       //always save on what phone story index you on so that no phone story will be repeat next time play
         if (currentState == 0)
         {
-            //PlayerPrefs.SetInt("inkSaveStatePhoneindex", phoneindex);
             if (PlayerPrefs.HasKey("inkSaveStatePhone"))
             {
                 PlayerPrefs.DeleteKey("inkSaveStatePhone");
@@ -377,7 +313,7 @@ public class DialogueManager : MonoBehaviour
             {
                 PlayerPrefs.DeleteKey("inkSaveStatePhone");
             }
-            mainsavedJson = PlayerPrefs.GetString("inkSaveStateTempFlower");        //only save main story if saved in flower state
+            mainsavedJson = PlayerPrefs.GetString("inkSaveStateTempFlower");        //only save main story if saved in flower state because flower is a repeated action that does not need to be saved
             PlayerPrefs.SetString("inkSaveStateMain", mainsavedJson);
 
         }
@@ -390,9 +326,9 @@ public class DialogueManager : MonoBehaviour
     }
 
 
-    void clearPhoneBox()
+    void clearPhoneBox()                    //clear choices and phoneboxes function
     {
-        foreach (GameObject p in phoneboxes)
+        foreach (GameObject p in phoneboxes)        //find all in the list, delete gameobject and clear the list 
         {
             Destroy(p);                 //clear phoneboxes
         }
@@ -415,7 +351,7 @@ public class DialogueManager : MonoBehaviour
         mainChoices.Clear();
     }
 
-    void generatePhonetime()
+    void generatePhonetime()                //generate a random time between two values which phone will show up after the time count down
     {
         if (phoneindex < phoneFiles.Count-1)
         {
@@ -426,20 +362,24 @@ public class DialogueManager : MonoBehaviour
     // Finished the Story (Dialogue)
     private void FinishDialogue()
     {
-        if (currentState == 0)
+        if (currentState == 0)              //if end main story, no more story
         {
-            Debug.Log("End of Dialogue!");
+            if (story.currentChoices.Count == 0)
+            {
+                Debug.Log("End of Dialogue!");
+                endText.enabled = true;
+            }
         }
-        else if (currentState == 1)
-        {
+        else if (currentState == 1)             //if in phone, if a story is finished and exited, it will not show up again
+        {       
             
             Debug.Log("End of Phone Dialogue!");
             finishedPhone = true;
-        }else if(currentState == 2)
+        }else if(currentState == 2)                 
         {
             Debug.Log("End of flower Dialogue!");
             mouseClick.myinkFlowerFile = null;
-            if (PlayerPrefs.HasKey("inkSaveStateTempFlower"))         // go back to main from where main story was
+            if (PlayerPrefs.HasKey("inkSaveStateTempFlower"))         // if in flower state, go back to main from where main story was
             {
                 currentState = 0;
                 phoneBack.enabled = false;
@@ -480,12 +420,13 @@ public class DialogueManager : MonoBehaviour
             float bound = 50;
             float spaceX = (phoneBack.GetComponent<RectTransform>().sizeDelta.x - bound * 2) / 12;
             float spaceY = (phoneBack.GetComponent<RectTransform>().sizeDelta.y - bound * 1.5f) / 2;
-            if (phoneboxes.Count > 0)
+            if (phoneboxes.Count > 0)           //create an offset so that text shows up one by one
             {
                 yPhoneboxOffset -= phoneboxes[phoneboxes.Count - 1].GetComponentInChildren<test>().yvalue + chatspace; // + bound;
                 Debug.Log("value: " + phoneboxes[phoneboxes.Count - 1].GetComponentInChildren<test>().yvalue);
             }
-            while (yPhoneboxOffset <= maxyPhonebox && phoneboxes.Count > 0)
+            while (yPhoneboxOffset <= maxyPhonebox && phoneboxes.Count > 0)     //to make sure there are enough space for the chat showing, if out of space,
+                                                                                //delete the top chatbox to make space, and remap their position using for loop and check space again 
             {
                 print("check");
                 GameObject temp = phoneboxes[0];
@@ -510,13 +451,21 @@ public class DialogueManager : MonoBehaviour
             }
             //
             GameObject phonebox = new GameObject();
+            Audiomanager.Instance.PlaySound(Audiomanager.Instance.choice, Audiomanager.Instance.choiceVolume);
             if (myname == "Sam")
             {
-                phonebox = Instantiate(phoneBoxSam, phoneBack.transform);
+                phonebox = Instantiate(phoneBoxSam, phoneBack.transform);           //if it is the protagonist talking, showing his phonebox(reversed)
+                phonebox.transform.GetChild(1).GetComponent<Image>().sprite = SamImage;
             }
-            else
+            else if (myname == "Danny")
             {
                 phonebox = Instantiate(phoneBox, phoneBack.transform);
+                phonebox.transform.GetChild(1).GetComponent<Image>().sprite = DannyImage;
+            }
+            else if (myname == "Mom")
+            {
+                phonebox = Instantiate(phoneBox, phoneBack.transform);
+                phonebox.transform.GetChild(1).GetComponent<Image>().sprite = MomImage;
             }
             phoneboxes.Add(phonebox);
             phonebox.GetComponent<TMP_Text>().text = myname;
@@ -534,6 +483,7 @@ public class DialogueManager : MonoBehaviour
         foreach (char letter in sentence.ToCharArray())
         {
             message.text += letter;
+            Audiomanager.Instance.PlaySound(Audiomanager.Instance.text, Audiomanager.Instance.textVolume);
             yield return null;
         }
         //CharacterScript tempSpeaker = GameObject.FindObjectOfType<CharacterScript>();
@@ -581,7 +531,7 @@ public class DialogueManager : MonoBehaviour
         AdvanceFromDecision();
     }
 
-    IEnumerator ShowChoicesPhone()
+    IEnumerator ShowChoicesPhone()          ///show phone choices from prefab
     {
         Debug.Log("There are Phone choices need to be made here!");
         List<Choice> _choices = story.currentChoices;
@@ -634,9 +584,8 @@ public class DialogueManager : MonoBehaviour
         AdvanceDialogue(story.Continue());
     }
 
-    /*** Tag Parser ***/
-    /// In Inky, you can use tags which can be used to cue stuff in a game.
-    /// This is just one way of doing it. Not the only method on how to trigger events. 
+
+    /// In Inky,use tags which can be used to cue stuff in a game. eg: #name Sam, seperate the string by space and use parameter to trigger things
     void ParseTags()
     {
         tags = story.currentTags;
@@ -686,11 +635,11 @@ public class DialogueManager : MonoBehaviour
             }
         }
     }
-    void SetAnimation(string _name)
-    {
-        CharacterScript cs = GameObject.FindObjectOfType<CharacterScript>();
-        cs.PlayAnimation(_name);
-    }
+    //void SetAnimation(string _name)
+    //{
+    //    CharacterScript cs = GameObject.FindObjectOfType<CharacterScript>();
+    //    cs.PlayAnimation(_name);
+    //}
     void SetTextColor(string _color)
     {
         switch (_color)
@@ -715,50 +664,53 @@ public class DialogueManager : MonoBehaviour
 
     public void phone()
     {
-        secondCanvas.SetActive(true);
-        phoneEnterButton.SetActive(false);
-        phoneExitButton.SetActive(true);
-        //Debug.Log(phoneEnterButton.active);
-        finishedPhone = false;
-        Debug.Log("triggered phone");
-        currentState =1;
-        //if (PlayerPrefs.HasKey("inkSaveStatePhone") && startIndex == phoneindex)        ///if start game from saved phone
-        //{
-        //    Debug.Log("load from saved phone story");
-        //    AdvanceDialogue(story.currentText);
-        //}
-
-        tempsavedJson = story.state.ToJson();
-        PlayerPrefs.SetString("inkSaveStateTemp", tempsavedJson);       //save  story progess in a temperary to go back to
-        if (PlayerPrefs.HasKey("inkSaveStateTempPhone"))                //if was in phone messages
+        if (currentState == 0)
         {
-            Debug.Log("load from temp saved phone story");
-            //phoneindex = PlayerPrefs.GetInt("inkSaveStatePhoneindex");      //retrive current storyfile
-            story = new Story(phoneFiles[phoneindex].text);
-            phonesavedJson = PlayerPrefs.GetString("inkSaveStateTempPhone");    //retrive current content
-            story.state.LoadJson(phonesavedJson);
-            Debug.Log(phonesavedJson);
-            if (firstPhoneTempLoad)
+            secondCanvas.SetActive(true);
+            phoneEnterButton.SetActive(false);
+            phoneExitButton.SetActive(true);
+            //Debug.Log(phoneEnterButton.active);
+            finishedPhone = false;
+            Debug.Log("triggered phone");
+            currentState = 1;
+            //if (PlayerPrefs.HasKey("inkSaveStatePhone") && startIndex == phoneindex)        ///if start game from saved phone
+            //{
+            //    Debug.Log("load from saved phone story");
+            //    AdvanceDialogue(story.currentText);
+            //}
+
+            tempsavedJson = story.state.ToJson();
+            PlayerPrefs.SetString("inkSaveStateTemp", tempsavedJson);       //save  story progess in a temperary to go back to
+            if (PlayerPrefs.HasKey("inkSaveStateTempPhone"))                //if was in phone messages
             {
-                AdvanceDialogue(story.currentText);
+                Debug.Log("load from temp saved phone story");
+                //phoneindex = PlayerPrefs.GetInt("inkSaveStatePhoneindex");      //retrive current storyfile
+                story = new Story(phoneFiles[phoneindex].text);
+                phonesavedJson = PlayerPrefs.GetString("inkSaveStateTempPhone");    //retrive current content
+                story.state.LoadJson(phonesavedJson);
+                Debug.Log(phonesavedJson);
+                if (firstPhoneTempLoad)
+                {
+                    AdvanceDialogue(story.currentText);
+                }
             }
-        }
-        else
-        {
-            Debug.Log("load from new story");
-            story = new Story(phoneFiles[phoneindex].text);
-            tags = new List<string>();
-            choiceSelected = null;
-            AdvanceDialogue(story.Continue());
-        }
+            else
+            {
+                Debug.Log("load from new story");                       //a new phone story
+                story = new Story(phoneFiles[phoneindex].text);
+                tags = new List<string>();
+                choiceSelected = null;
+                AdvanceDialogue(story.Continue());
+            }
 
-        if (story.currentChoices.Count != 0)
-        {
-            StartCoroutine(ShowChoicesPhone());
+            if (story.currentChoices.Count != 0)        //if there are choice, show phone choice
+            {
+                StartCoroutine(ShowChoicesPhone());
+            }
+
+
+            phoneBack.enabled = true;
         }
-
-
-        phoneBack.enabled = true;
         
     }
 
@@ -781,20 +733,17 @@ public class DialogueManager : MonoBehaviour
             phoneEnterButton.SetActive(true);       // allow player to click phone button to go back to the content
         }
         //hasPhoneMessages = false;
-        if (PlayerPrefs.HasKey("inkSaveStateTemp"))         // go back to main from where main story was
+        if (PlayerPrefs.HasKey("inkSaveStateTemp"))         // go back to main from where main story was by loading the temp story save
         {
             currentState = 0;
             phoneExitButton.SetActive(false);
             nametag2.text = "";
             message2.text = "";
             phoneBack.enabled = false;
-            //PlayerPrefs.DeleteKey("inkSaveStatePhone");
             story = new Story(inkFile.text);
-            //mainsavedJson = PlayerPrefs.GetString("inkSaveStateTemp");
             tempsavedJson = PlayerPrefs.GetString("inkSaveStateTemp");
             story.state.LoadJson(tempsavedJson);
             Debug.Log(tempsavedJson);
-            //nametag.text = "Phoenix";
             message.text = story.currentText;
 
             if (story.currentChoices.Count != 0)

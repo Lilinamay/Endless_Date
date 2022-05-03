@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//mouse click on flowers, as well as esc to open menu in game
 public class mouseClick : MonoBehaviour
 {
     Ray ray;
