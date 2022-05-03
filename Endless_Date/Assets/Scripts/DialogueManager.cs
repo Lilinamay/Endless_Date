@@ -10,7 +10,7 @@ public class DialogueManager : MonoBehaviour
     public TextAsset inkFile;
     [SerializeField] List<TextAsset> phoneFiles;
     public TextAsset flowerFile;
-    public int phoneindex = -1;
+    int phoneindex = -1;
 
 
     public GameObject textBox;
@@ -46,9 +46,9 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] float yPhoneboxOffset = 0;
     [SerializeField] float maxyPhonebox = -150;
     [SerializeField] List<GameObject> phoneboxes;
-    public bool hasPhoneMessages= false;
-    public bool finishedPhone = false;              //keep record if phone story is finished, only true when just finished then reset to false
-    public float randomPhoneTime = 0;
+    bool hasPhoneMessages= false;
+    bool finishedPhone = false;              //keep record if phone story is finished, only true when just finished then reset to false
+    float randomPhoneTime = 0;
     [SerializeField] int timerMin = 0;
     [SerializeField] int timerMax = -150;
     bool firstPhoneTempLoad = false; //if had an unfinished phone story from last time and only phone again for the first time, show current phone story

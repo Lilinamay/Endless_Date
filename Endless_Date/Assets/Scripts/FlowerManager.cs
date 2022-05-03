@@ -5,8 +5,8 @@ using UnityEngine;
 public class FlowerManager : MonoBehaviour
 {
     [SerializeField] List<GameObject> flowerList;
-    public bool FlowerInScene = false;
-    public bool FlowerSpawn = false;
+    bool FlowerInScene = false;
+    bool FlowerSpawn = false;
     [SerializeField] int timerMin = 0;
     [SerializeField] int timerMax = 0;
     Vector3 leftPos;        //when spawn either spawn from left or right
